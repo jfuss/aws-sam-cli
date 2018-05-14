@@ -28,7 +28,7 @@ class InvokeIntegBase(TestCase):
         return command
 
     def get_command_list(self, function_to_invoke, template_path=None, event_path=None, env_var_path=None):
-        command_list = [self.cmd, "local", "invoke", function_to_invoke]
+        command_list = [self.cmd, "local", "invoke", function_to_invoke, "--skip-pull-image"]
 
         if template_path:
             command_list = command_list + ["-t", template_path]

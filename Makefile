@@ -8,7 +8,7 @@ test:
 
 integ-test:
 	# Integration tests don't need code coverage
-	SAM_CLI_DEV=1 pytest tests/integration
+	SAM_CLI_DEV=1 pytest tests/integration --pdb
 
 func-test:
 	# Verify function test coverage only for `samcli.local` package

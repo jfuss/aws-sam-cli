@@ -10,6 +10,7 @@ from samcli.local.lambdafn.exceptions import FunctionNotFound
 from samcli.local.events.api_event import ContextIdentity, RequestContext, ApiGatewayLambdaEvent
 from .service_error_responses import ServiceErrorResponses
 from .path_converter import PathConverter
+from .api_compat_request import ApiGatewayRequest
 
 LOG = logging.getLogger(__name__)
 
@@ -68,6 +69,7 @@ class Service(object):
                           static_url_path="",  # Mount static files at root '/'
                           static_folder=self.static_dir  # Serve static files from this directory
                           )
+        self._app.request_class = ApiGatewayRequest
 
         for api_gateway_route in self.routing_list:
             path = PathConverter.convert_path_to_flask(api_gateway_route.path)
@@ -352,6 +354,11 @@ class Service(object):
         event_headers["X-Forwarded-Proto"] = flask_request.scheme
         event_headers["X-Forwarded-Port"] = str(port)
 
+        # APIGW does not support duplicate query parameters. Flask gives query params as a list so
+        # we need to convert only grab the first item unless many were given, were we grab the last to be consistent
+        # with APIGW
+        query_string_dict = flask_request.query_string_params
+
         event = ApiGatewayLambdaEvent(http_method=method,
                                       body=request_data,
                                       resource=endpoint,
@@ -365,6 +372,37 @@ class Service(object):
         event_str = json.dumps(event.to_dict())
         LOG.debug("Constructed String representation of Event to invoke Lambda. Event: %s", event_str)
         return event_str
+
+    # @staticmethod
+    # def _query_string_params(flask_request):
+    #     """
+    #     Constructs an APIGW equivalent query string dictionary
+    #
+    #     Parameters
+    #     ----------
+    #     flask_request request
+    #         Request from Flask
+    #
+    #     Returns dict (str: str)
+    #     -------
+    #         Empty dict if no query params where in the request otherwise returns a dictionary of key to value
+    #
+    #     """
+    #     query_string_dict = {}
+    #
+    #     # Flask returns an ImmutableMultiDict so convert to a dictionary that becomes
+    #     # a dict(str: list) then iterate over
+    #     for query_string_key, query_string_list in dict(flask_request.args).items():
+    #         query_string_value_length = len(query_string_list)
+    #
+    #         # if the list is empty, default to empty string
+    #         if not query_string_value_length:
+    #             query_string_dict[query_string_key] = ""
+    #         else:
+    #             # APIGW doesn't handle duplicate query string keys, picking the last one in the list
+    #             query_string_dict[query_string_key] = query_string_list[-1]
+    #
+    #     return query_string_dict
 
     @staticmethod
     def _should_base64_encode(binary_types, request_mimetype):

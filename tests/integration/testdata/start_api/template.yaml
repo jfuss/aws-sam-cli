@@ -34,6 +34,12 @@ Resources:
             Method: GET
             Path: /proxypath/{proxy+}
 
+        OptionsPath:
+          Type: Api
+          Properties:
+            Method: Options
+            Path: /optionspath
+
   EchoEventFunction:
     Type: AWS::Serverless::Function
     Properties:
