@@ -58,6 +58,28 @@ class TestSamPython36HelloWorldIntegration(InvokeIntegBase):
         self.assertEquals(process_stdout.decode('utf-8'), "", msg="The return statement in the LambdaFunction "
                                                                   "should never return leading to an empty string")
 
+    def test_invoke_with_timeout_set_by_parameters(self):
+        command_list = self.get_command_list("TimeoutFunctionWithParameter",
+                                             template_path=self.template_path,
+                                             event_path=self.event_path)
+
+        start = timer()
+        process = Popen(command_list, stdout=PIPE)
+        return_code = process.wait()
+        end = timer()
+
+        wall_clock_cli_duration = end - start
+
+        process_stdout = b"".join(process.stdout.readlines()).strip()
+
+        # validate the time of the cli (timeout is set to 5s)
+        self.assertGreater(wall_clock_cli_duration, 5)
+        self.assertLess(wall_clock_cli_duration, 20)
+
+        self.assertEquals(return_code, 0)
+        self.assertEquals(process_stdout.decode('utf-8'), "", msg="The return statement in the LambdaFunction "
+                                                                  "should never return leading to an empty string")
+
     def test_invoke_with_env_vars(self):
         command_list = self.get_command_list("EchoCustomEnvVarFunction",
                                              template_path=self.template_path,

@@ -56,7 +56,8 @@ class InvokeContext(object):
                  debug_port=None,
                  debug_args=None,
                  debugger_path=None,
-                 aws_region=None):
+                 aws_region=None,
+                 parameter_overrides=None):
         """
         Initialize the context
 
@@ -98,6 +99,7 @@ class InvokeContext(object):
         self._debug_port = debug_port
         self._debug_args = debug_args
         self._debugger_path = debugger_path
+        self._parameter_overrides = parameter_overrides
 
         self._template_dict = None
         self._function_provider = None
@@ -114,7 +116,7 @@ class InvokeContext(object):
 
         # Grab template from file and create a provider
         self._template_dict = self._get_template_data(self._template_file)
-        self._function_provider = SamFunctionProvider(self._template_dict)
+        self._function_provider = SamFunctionProvider(self._template_dict, self._parameter_overrides)
 
         self._env_vars_value = self._get_env_vars_value(self._env_vars_file)
         self._log_file_handle = self._setup_log_file(self._log_file)

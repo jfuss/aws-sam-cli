@@ -26,6 +26,7 @@ from samtranslator.parser.parser import Parser
 
 from samcli.commands.validate.lib.exceptions import InvalidSamDocumentException
 from .local_uri_plugin import SupportLocalUriPlugin
+from .local_parameter_resolution import LocalParameterResolution
 
 
 class SamTranslatorWrapper(object):
@@ -33,7 +34,7 @@ class SamTranslatorWrapper(object):
     _thisdir = os.path.dirname(os.path.abspath(__file__))
     _DEFAULT_MANAGED_POLICIES_FILE = os.path.join(_thisdir, "default_managed_policies.json")
 
-    def __init__(self, sam_template, offline_fallback=True):
+    def __init__(self, sam_template, parameter_overrides=None, offline_fallback=True):
         """
 
         Parameters
@@ -44,9 +45,11 @@ class SamTranslatorWrapper(object):
             Set it to True to make the translator work entirely offline, if internet is not available
         """
         self.local_uri_plugin = SupportLocalUriPlugin()
+        self.local_parameter_resolution = LocalParameterResolution(parameter_overrides)
         self.extra_plugins = [
             # Extra plugin specific to the SAM CLI that will support local paths for CodeUri & DefinitionUri
-            self.local_uri_plugin
+            self.local_uri_plugin,
+            self.local_parameter_resolution
         ]
 
         self._sam_template = sam_template
@@ -55,6 +58,7 @@ class SamTranslatorWrapper(object):
     def run_plugins(self, convert_local_uris=True):
         template_copy = self.template
 
+        # additional_plugins = [self.local_parameter_resolution]
         additional_plugins = []
         if convert_local_uris:
             # Add all the plugins to convert local path if asked to.

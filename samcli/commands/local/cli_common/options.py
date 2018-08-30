@@ -127,6 +127,12 @@ def invoke_common_options(f):
                           "containers should connect to, along with the default bridge network. If not specified, "
                           "the Lambda containers will only connect to the default bridge docker network."),
 
+        click.option('--parameter-overrides',
+                     help="Optional. A string that contains CloudFormation parameter overrides encoded as key-value "
+                          "pairs. Use the same format as the AWS CLI, e.g. 'ParameterKey=KeyPairName,"
+                          "ParameterValue=MyKey ParameterKey=InstanceType,ParameterValue=t1.micro'. In case of parsing "
+                          "errors all values are ignored"),
+
         click.option('--log-file', '-l',
                      help="logfile to send runtime logs to."),
 
