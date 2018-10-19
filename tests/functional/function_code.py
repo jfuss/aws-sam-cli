@@ -132,6 +132,7 @@ def nodejs_lambda(code):
 
     print(str(os.listdir(directory)))
     print("isLinks? " + str(os.path.islink(filename)))
+    os.chmod(filename, 0o777)
 
     # The directory that Python returns might have symlinks. The Docker File sharing settings will not resolve
     # symlinks. Hence get the real path before passing to Docker.
