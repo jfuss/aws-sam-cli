@@ -145,6 +145,9 @@ class LambdaOutputParser(object):
         # information we have, we need to inspect this to understand if the container returned a some data or raised an
         # error
         is_lambda_user_error_response = LambdaOutputParser.is_lambda_error_response(lambda_response)
+        
+        LOG.info("lambda_response: %s", lambda_response)
+        LOG.info("lambda_logs: %s", lambda_logs) 
 
         return lambda_response, lambda_logs, is_lambda_user_error_response
 
