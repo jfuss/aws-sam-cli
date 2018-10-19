@@ -126,6 +126,7 @@ def nodejs_lambda(code):
         fp.write(code)
         fp.flush()
         
+    print(str(os.stat(filename)))
     with open(filename, "r") as fp:
         print(fp.read())
 
