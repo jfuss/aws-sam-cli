@@ -10,8 +10,9 @@ python:
   - "3.6"
   
 env:
-  - TMPDIR=/tmp
-  - AWS_DEFAULT_REGION=us-east-1
+  global:
+    - TMPDIR=/tmp
+    - AWS_DEFAULT_REGION=us-east-1
 
 # Enable 3.7 without globally enabling sudo and dist: xenial for other build jobs
 matrix:
