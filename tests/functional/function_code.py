@@ -125,6 +125,9 @@ def nodejs_lambda(code):
     with open(filename, "w+") as fp:
         fp.write(code)
         fp.flush()
+        
+    with open(filename, "r") as fp:
+        print(fp.read())
 
     # The directory that Python returns might have symlinks. The Docker File sharing settings will not resolve
     # symlinks. Hence get the real path before passing to Docker.
