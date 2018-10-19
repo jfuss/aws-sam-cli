@@ -4,6 +4,9 @@ language: python
 
 services:
   - docker
+  
+env:
+  AWS_DEFAULT_REGION: us-east-1
 
 python:
   - "2.7"
