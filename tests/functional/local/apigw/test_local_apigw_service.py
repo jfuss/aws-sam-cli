@@ -278,6 +278,8 @@ class TestService_EventSerialization(TestCase):
                                          headers=None)
 
         response = requests.get(self.url + path)
+        
+        print(response.content)
 
         actual = response.json()
 
