@@ -5,9 +5,9 @@ language: python
 services:
   - docker
 
-python:
-  - "2.7"
-  - "3.6"
+# python:
+  # - "2.7"
+  # - "3.6"
   
 env:
   global:
@@ -29,6 +29,6 @@ install:
 
 script:
   # Runs unit tests
-  - make pr
+  # - make pr
   - make func-test
-  - make integ-test
+  # - make integ-test
