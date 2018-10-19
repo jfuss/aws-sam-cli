@@ -13,6 +13,7 @@ from .service_error_responses import ServiceErrorResponses
 from .path_converter import PathConverter
 
 LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
 
 
 class Route(object):
