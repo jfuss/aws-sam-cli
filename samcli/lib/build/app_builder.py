@@ -63,6 +63,13 @@ def _get_workflow_config(runtime):
             dependency_manager="bundler",
             application_framework=None,
             manifest_name="Gemfile")
+    elif runtime.startswith('go'):
+        return config(
+            language="go",
+            dependency_manager="modules",
+            application_framework=None,
+            manifest_name="go.mod"
+        )
     else:
         raise UnsupportedRuntimeException("'{}' runtime is not supported".format(runtime))
 
@@ -126,7 +133,8 @@ class ApplicationBuilder(object):
             LOG.info("Building resource '%s'", lambda_function.name)
             result[lambda_function.name] = self._build_function(lambda_function.name,
                                                                 lambda_function.codeuri,
-                                                                lambda_function.runtime)
+                                                                lambda_function.runtime,
+                                                                lambda_function.handler)
 
         return result
 
@@ -173,7 +181,7 @@ class ApplicationBuilder(object):
 
         return template_dict
 
-    def _build_function(self, function_name, codeuri, runtime):
+    def _build_function(self, function_name, codeuri, runtime, handler):
 
         config = _get_workflow_config(runtime)
 
@@ -198,7 +206,8 @@ class ApplicationBuilder(object):
                                 artifacts_dir,
                                 scratch_dir,
                                 manifest_path,
-                                runtime)
+                                runtime,
+                                handler)
 
     def _build_function_in_process(self,
                                    config,
@@ -206,18 +215,23 @@ class ApplicationBuilder(object):
                                    artifacts_dir,
                                    scratch_dir,
                                    manifest_path,
-                                   runtime):
+                                   runtime,
+                                   handler):
 
         builder = LambdaBuilder(language=config.language,
                                 dependency_manager=config.dependency_manager,
                                 application_framework=config.application_framework)
+
+        if config.language == 'go':
+            options = {'handler': handler}
 
         try:
             builder.build(source_dir,
                           artifacts_dir,
                           scratch_dir,
                           manifest_path,
-                          runtime=runtime)
+                          runtime=runtime,
+                          options=options)
         except LambdaBuilderError as ex:
             raise BuildError(str(ex))
 
@@ -229,7 +243,8 @@ class ApplicationBuilder(object):
                                      artifacts_dir,
                                      scratch_dir,
                                      manifest_path,
-                                     runtime):
+                                     runtime,
+                                     handler):
 
         # If we are printing debug logs in SAM CLI, the builder library should also print debug logs
         log_level = LOG.getEffectiveLevel()
