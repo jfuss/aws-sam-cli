@@ -18,13 +18,12 @@ import zipfile
 import contextlib
 import uuid
 import shutil
-from awscli.compat import six
+import six
 
-from awscli.compat import urlparse
+from six.moves import urllib as urlparse
 from contextlib import contextmanager
-from awscli.customizations.cloudformation import exceptions
-from awscli.customizations.cloudformation.yamlhelper import yaml_dump, \
-    yaml_parse
+from . import exceptions
+from samcli.yamlhelper import yaml_dump, yaml_parse
 
 LOG = logging.getLogger(__name__)
 

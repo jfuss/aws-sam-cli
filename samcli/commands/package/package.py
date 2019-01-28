@@ -18,17 +18,17 @@ import sys
 import json
 
 from botocore.client import Config
+import boto3
 
 from .artifact_exporter import Template
 from samcli.yamlhelper import yaml_dump
-import exceptions
-from awscli.customizations.commands import BasicCommand
 from .s3uploader import S3Uploader
+from . import exceptions
 
 LOG = logging.getLogger(__name__)
 
 
-class PackageCommand(BasicCommand):
+class PackageCommand(object):
 
     MSG_PACKAGED_TEMPLATE_WRITTEN = (
         "Successfully packaged artifacts and wrote output template "
@@ -42,8 +42,8 @@ class PackageCommand(BasicCommand):
 
     NAME = "package"
 
-    DESCRIPTION = BasicCommand.FROM_FILE("cloudformation",
-                                         "_package_description.rst")
+    # DESCRIPTION = BasicCgommand.FROM_FILE("cloudformation",
+    #                                      "_package_description.rst")
 
     ARG_TABLE = [
         {
@@ -123,31 +123,31 @@ class PackageCommand(BasicCommand):
         }
     ]
 
-    def _run_main(self, parsed_args, parsed_globals):
-        s3_client = self._session.create_client(
+    def _run_main(self, template_file, use_json, output_template_file, s3_prefix, s3_bucket, kms_key_id,
+                  force_upload, region, metadata={}):
+        s3_client = boto3.client(
             "s3",
             config=Config(signature_version='s3v4'),
-            region_name=parsed_globals.region,
-            verify=parsed_globals.verify_ssl)
+            verify=True)
 
-        template_path = parsed_args.template_file
+        template_path = template_file
         if not os.path.isfile(template_path):
             raise exceptions.InvalidTemplatePathError(
                     template_path=template_path)
 
-        bucket = parsed_args.s3_bucket
+        bucket = s3_bucket
 
         self.s3_uploader = S3Uploader(s3_client,
                                       bucket,
-                                      parsed_globals.region,
-                                      parsed_args.s3_prefix,
-                                      parsed_args.kms_key_id,
-                                      parsed_args.force_upload)
+                                      region,
+                                      s3_prefix,
+                                      kms_key_id,
+                                      force_upload)
         # attach the given metadata to the artifacts to be uploaded
-        self.s3_uploader.artifact_metadata = parsed_args.metadata
+        self.s3_uploader.artifact_metadata = metadata
 
-        output_file = parsed_args.output_template_file
-        use_json = parsed_args.use_json
+        output_file = output_template_file
+        use_json = use_json
         exported_str = self._export(template_path, use_json)
 
         sys.stdout.write("\n")
