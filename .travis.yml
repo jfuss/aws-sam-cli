@@ -29,4 +29,4 @@ script:
   # Runs unit tests
 #  - make pr
 #  - SAM_CLI_DEV=1 travis_wait pytest -vv tests/integration
-  - make func-test
+  - pytest --cov samcli.local --cov samcli.commands.local --cov-report term-missing tests/functional/local/lambda_service/test_local_lambda_invoke.py
