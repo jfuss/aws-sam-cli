@@ -65,7 +65,7 @@ class TestLocalLambdaService(TestCase):
         t = threading.Thread(name='thread', target=cls.service.run, args=())
         t.setDaemon(True)
         t.start()
-        time.sleep(1)
+        time.sleep(15)
 
     @classmethod
     def tearDownClass(cls):
@@ -135,7 +135,7 @@ class TestLocalEchoLambdaService(TestCase):
         t = threading.Thread(name='thread', target=cls.service.run, args=())
         t.setDaemon(True)
         t.start()
-        time.sleep(1)
+        time.sleep(15)
 
     @classmethod
     def tearDownClass(cls):
@@ -200,7 +200,7 @@ class TestLocalLambdaService_NotSupportedRequests(TestCase):
         t = threading.Thread(name='thread', target=cls.service.run, args=())
         t.setDaemon(True)
         t.start()
-        time.sleep(1)
+        time.sleep(15)
 
     @classmethod
     def tearDownClass(cls):
