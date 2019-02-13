@@ -126,6 +126,7 @@ def nodejs_lambda(code):
         fp.write(code)
         fp.flush()
 
+    os.chmod(filename, 0o755)
     # The directory that Python returns might have symlinks. The Docker File sharing settings will not resolve
     # symlinks. Hence get the real path before passing to Docker.
     return os.path.realpath(directory)
