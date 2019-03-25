@@ -8,6 +8,7 @@ This is a sample template for {{ cookiecutter.project_name }} - Below is a brief
 ├── README.md                   <-- This instructions file
 ├── hello-world                 <-- Source code for a lambda function
 │   ├── main.go                 <-- Lambda function code
+│   ├── go.mod                  <-- Go Modules Dependency
 │   └── main_test.go            <-- Unit tests
 └── template.yaml
 ```
@@ -19,14 +20,6 @@ This is a sample template for {{ cookiecutter.project_name }} - Below is a brief
 * [Golang](https://golang.org)
 
 ## Setup process
-
-### Installing dependencies
-
-In this example we use the built-in `go get` and the only dependency we need is AWS Lambda Go SDK:
-
-```shell
-go get -u github.com/aws/aws-lambda-go/...
-```
 
 **NOTE:** As you change your application code as well as dependencies during development, you might want to research how to handle dependencies in Golang at scale.
 
