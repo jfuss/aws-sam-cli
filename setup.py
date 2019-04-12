@@ -18,8 +18,15 @@ def read(*filenames, **kwargs):
 
 def read_requirements(req='base.txt'):
     content = read(os.path.join('requirements', req))
-    return [line for line in content.split(os.linesep)
-            if not line.strip().startswith('#')]
+    requirements = []
+    for line in content.split(os.linesep):
+        # if line.startswith('aws_lambda_builders'):
+        #     continue
+
+        if not line.strip() == '' or not line.strip().startswith('#'):
+            requirements.append(line)
+
+    return requirements
 
 
 def read_version():
