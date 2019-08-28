@@ -9,7 +9,10 @@ from samtranslator.translator.translator import Translator
 from samcli.yamlhelper import yaml_dump
 import six
 
+from botocore.exceptions import ClientError, NoRegionError
+
 from .exceptions import InvalidSamDocumentException
+from samcli.commands.exceptions import InsufficentCredientials
 
 LOG = logging.getLogger(__name__)
 
@@ -51,7 +54,11 @@ class SamTemplateValidator(object):
         InvalidSamDocumentException
              If the template is not valid, an InvalidSamDocumentException is raised
         """
-        managed_policy_map = self.managed_policy_loader.load()
+        try:
+            managed_policy_map = self.managed_policy_loader.load()
+        except ClientError as e:
+            raise InsufficentCredientials(e)
+        
 
         sam_translator = Translator(managed_policy_map=managed_policy_map,
                                     sam_parser=self.sam_parser,
@@ -63,6 +70,8 @@ class SamTemplateValidator(object):
             template = sam_translator.translate(sam_template=self.sam_template,
                                                 parameter_values={})
             LOG.debug("Translated template is:\n%s", yaml_dump(template))
+        except NoRegionError as e:
+            raise InsufficentCredientials(e)
         except InvalidDocumentException as e:
             raise InvalidSamDocumentException(
                 functools.reduce(lambda message, error: message + ' ' + str(error), e.causes, str(e)))

@@ -12,3 +12,6 @@ class UserException(click.ClickException):
     """
 
     exit_code = 1
+
+class InsufficentCredientials(UserException):
+    pass
