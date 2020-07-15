@@ -93,7 +93,6 @@ class ApplicationBuilder:
         self._parallel = parallel
         self._mode = mode
 
-        self._deprecated_runtimes = {"nodejs4.3", "nodejs6.10", "nodejs8.10", "dotnetcore2.0"}
         self._colored = Colored()
 
     def build(self):
@@ -233,13 +232,6 @@ class ApplicationBuilder:
         str
             Path to the location where built artifacts are available
         """
-
-        if runtime in self._deprecated_runtimes:
-            message = f"WARNING: {runtime} is no longer supported by AWS Lambda, please update to a newer supported runtime. SAM CLI " \
-                      f"will drop support for all deprecated runtimes {self._deprecated_runtimes} on May 1st. " \
-                      f"See issue: https://github.com/awslabs/aws-sam-cli/issues/1934 for more details."
-            LOG.warning(self._colored.yellow(message))
-
         # Create the arguments to pass to the builder
         # Code is always relative to the given base directory.
         code_dir = str(pathlib.Path(self._base_dir, codeuri).resolve())
